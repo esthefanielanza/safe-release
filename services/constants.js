@@ -1,4 +1,10 @@
 module.exports = {
   CLASS_TYPE: 'ClassDeclaration',
-  METHOD_TYPE: 'MethodDefinition'
+  METHOD_TYPE: 'MethodDefinition',
+  ADD_METHOD: 'ADD_METHOD',
+  REMOVE_METHOD: 'REMOVE_METHOD',
+  ADD_PARAM: 'ADD_PARAM',
+  REMOVE_PARAM: 'REMOVED_PARAM',
+  ADD_CLASS: 'ADD_CLASS',
+  REMOVE_CLASS: 'REMOVE_CLASS'
 };

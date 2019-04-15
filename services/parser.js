@@ -73,56 +73,127 @@ function buildFileStructure(file) {
   }
 }
 
-function compare(structureA, structureB) {
-  const results = {};
-  Object.keys(structureB).forEach(classObject => {
-    const changes = []
+function addNewClass(className) {
+  return {
+    name: className,
+    type: constants.ADD_CLASS
+  }
+}
 
-    if(!structureA[classObject]) {
-      changes.push(`A classe ${classObject} foi adicionada`);
+function addNewMethod(methodName, methodData, className) {
+  return { 
+    name: methodName,
+    params: methodData.params,
+    class: className,
+    type: constants.ADD_METHOD,
+  }
+}
+
+
+function removedMethod(methodName, methodData, className) {
+  return { 
+    name: methodName,
+    params: methodData.params,
+    class: className,
+    type: constants.REMOVE_METHOD,
+  }
+}
+
+function addParam(methodName, className, param) {
+  return {
+    name: methodName,
+    class: className,
+    param: param,
+    type: constants.ADD_PARAM
+  }
+}
+
+function removeParam(methodName, className, param) {
+  return {
+    name: methodName,
+    class: className,
+    param: param,
+    type: constants.REMOVE_PARAM
+  }
+}
+
+function getMethod(structure, className, methodName) {
+  return structure[className][methodName];
+}
+
+function checkParamChanges(methodDataA, methodDataB, methodName, className) {
+  const changes = [];
+  const paramsA = methodDataA.params
+  const paramsB = methodDataB.params
+  
+  paramsB.forEach(param => {
+    const doesParamExistsOnA = paramsA.includes(param) 
+    if(!doesParamExistsOnA) {
+      changes.push(addParam(methodName, className, param))
+    }
+  })
+
+  paramsA.forEach(param => {
+    const doesParamExistsOnB = paramsB.includes(param);
+    if(!doesParamExistsOnB) {
+      changes.push(removeParam(methodName, className, param))
+    }
+  })
+
+  return changes;
+}
+
+function checkIfMethodsChanged(structureA, structureB, className, method) {
+  const changes = []
+  const methodDataB = getMethod(structureB, className, method);
+  const methodDataA = getMethod(structureA, className, method);
+  const doesMethodNotExistsOnA = !methodDataA;
+
+  if (doesMethodNotExistsOnA) {
+    changes.push(addNewMethod(method, methodDataB, className));
+  } else {
+    changes.push(...checkParamChanges(methodDataA, methodDataB, method, className));
+  }
+
+  return changes;
+}
+
+function checkIfMethodsWereRemoved(structureA, structureB, className) {
+  const changes = [];
+  const methodsInA = structureA[className];
+
+  Object.keys(methodsInA).forEach(method => {
+    const methodDataB = getMethod(structureB, className, method);
+    const methodDataA = getMethod(structureA, className, method);
+    
+    if(!methodDataB) {
+      changes.push(removedMethod(method, methodDataA, className));
+    }
+  })
+
+  return changes;
+}
+
+function compare(structureA, structureB) {
+  const changes = []
+
+  Object.keys(structureB).forEach(className => {
+    const doesClassExistOnA = structureA[className]
+    const methodsInB = structureB[className];
+
+    if(!doesClassExistOnA) {
+      changes.push(addNewClass(className))
       return;
     }
 
-    Object.keys(structureB[classObject]).forEach(method => {
-      const methodDataB = structureB[classObject][method]
-      const methodDataA = structureA[classObject][method]
-
-      if(!methodDataA) {
-        changes.push(`O metodo ${method}(${methodDataB.params}) foi adicionado`);
-      } else {
-        const paramsA = methodDataA.params
-        const paramsB = methodDataB.params
-        if(paramsA.length !== paramsB.length) {
-          if(paramsB.length > paramsA.length) {
-            paramsB.forEach(param => {
-              if(!paramsA.includes(param)) {
-                changes.push(`O parametro ${param} foi adicionado ao método ${method}`)
-              }
-            })
-          } else {
-            paramsA.forEach(param => {
-              if(!paramsB.includes(param)) {
-                changes.push(`O parametro ${param} foi removido do metodo ${method}`)
-              }
-            })
-          }
-        }
-      }
+    Object.keys(methodsInB).forEach(method => {
+      changes.push(...checkIfMethodsChanged(structureA, structureB, className, method));
     })
 
-    Object.keys(structureA[classObject]).forEach(method => {
-      const methodDataB = structureB[classObject][method]
-      const methodDataA = structureA[classObject][method]
-
-      if(!methodDataB) {
-        changes.push(`O metodo ${method}(${methodDataA.params}) foi removido`);
-      }
-    })
-
-    if(changes.length > 0) results[classObject] = changes;
+    changes.push(...checkIfMethodsWereRemoved(structureA, structureB, className))
   })
 
-  return results;
+  return changes;
 }
 
 module.exports = {
