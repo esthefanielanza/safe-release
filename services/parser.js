@@ -6,7 +6,7 @@ function getStructureData(structures) {
     entity: structures[0],
     body: structures[0].body
   }
-  structures.pop();
+  structures.shift();
   return structure;
 }
 
@@ -77,6 +77,13 @@ function addNewClass(className) {
   return {
     name: className,
     type: constants.ADD_CLASS
+  }
+}
+
+function removeClass(className) {
+  return {
+    name: className,
+    type: constants.REMOVE_CLASS
   }
 }
 
@@ -191,6 +198,15 @@ function compare(structureA, structureB) {
     })
 
     changes.push(...checkIfMethodsWereRemoved(structureA, structureB, className))
+  })
+
+  Object.keys(structureA).forEach(className => {
+    const doesClassExistOnB = structureB[className]
+
+    if(!doesClassExistOnB) {
+      changes.push(removeClass(className))
+      return;
+    }
   })
 
   return changes;

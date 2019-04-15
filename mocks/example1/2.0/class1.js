@@ -6,4 +6,14 @@ class Class1 {
   multiply(a, b) { 
     return a * b;
   }
+
+  isLarger(a, b, c) {
+    return a > b;
+  }
+}
+
+class Class3 {
+  throwError(error) {
+    throw error;
+  }
 }
