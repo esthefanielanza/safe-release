@@ -17,3 +17,11 @@ export class Class3 {
     throw error;
   }
 }
+
+export function log(text) {
+  console.log(text);
+}
+
+export const screan = (text) => {
+  return `${text}!!!`
+}

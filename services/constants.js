@@ -1,6 +1,7 @@
 module.exports = {
   CLASS_TYPE: 'ClassDeclaration',
   METHOD_TYPE: 'MethodDefinition',
+  FUNCTION_TYPE: 'FunctionDeclaration',
   EXPORT_TYPE: 'ExportNamedDeclaration',
   ADD_METHOD: 'ADDED_METHOD',
   REMOVE_METHOD: 'REMOVED_METHOD',

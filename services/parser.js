@@ -26,11 +26,12 @@ function checkMethodClass(methods, methodClass) {
 }
 
 function getParams(object) {
-  return object.value.params.map(param => param.name);
+  const params = object.value ? object.value.params : object.params;
+  return params.map(param => param.name);
 }
 
-function saveNewMethod(object, entity, methods) {
-  const methodName = object.key.name;
+function saveNewMethod(object, entity = {}, methods) {
+  const methodName = object.key ? object.key.name : object.id.name;
   const methodClass = entity.class || 'general';
   
   checkMethodClass(methods, methodClass);
@@ -47,6 +48,7 @@ function handleTypeOfStructures(object, structures, entity, methods) {
       updateStructuresWithNewClass(object, structures);
       break;
     case constants.METHOD_TYPE:
+    case constants.FUNCTION_TYPE:
       saveNewMethod(object, entity, methods)
       break;
     default:
