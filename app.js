@@ -32,8 +32,8 @@ app.get('/compare', function (req, res) {
 });
 
 app.get('/esprima', function (req, res) {
-  const file = fs.readFileSync('./mocks/example1/1.0/class1.js', 'utf8');
-  const parsedFile = esprima.parseScript(file)
+  const file = fs.readFileSync('./mocks/example1/2.0/class1.js', 'utf8');
+  const parsedFile = esprima.parseModule(file)
   res.end(JSON.stringify(parsedFile));
 });
 

@@ -1,4 +1,4 @@
-class Class1 {
+export class Class1 {
   sum(a) {
     return a + a;
   }
@@ -12,7 +12,7 @@ class Class1 {
   }
 }
 
-class Class3 {
+export class Class3 {
   throwError(error) {
     throw error;
   }

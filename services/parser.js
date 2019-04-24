@@ -2,9 +2,10 @@ const esprima = require('esprima');
 const constants = require('./constants');
 
 function getStructureData(structures) {
+  const body = structures[0].body
   const structure = {
     entity: structures[0],
-    body: structures[0].body
+    body: Array.isArray(body) ? body : [body]
   }
   structures.shift();
   return structure;
@@ -54,18 +55,25 @@ function handleTypeOfStructures(object, structures, entity, methods) {
 }
 
 function buildFileStructure(file) {
-  const esprimaFile = esprima.parseScript(file);
+  const esprimaFile = esprima.parseModule(file);
   try {
-    let structures = [esprimaFile];
     const methods = { general: {} };
+    const { body: programBody } = esprimaFile
 
-    while(structures.length > 0) {
-      const { entity, body } = getStructureData(structures);
-      body.forEach(object => {
-        handleTypeOfStructures(object, structures, entity, methods)
-      });
-    }
+    programBody.forEach(item => {
+      if(item.type === constants.EXPORT_TYPE) {
+        let structures = [{ body: item.declaration }];
 
+        while(structures.length > 0) {
+          let { entity, body } = getStructureData(structures);
+
+          body.forEach(object => {
+            handleTypeOfStructures(object, structures, entity, methods)
+          });
+        }
+      }
+    })
+    
     return methods;
   } catch(e) {
     console.error(e);
@@ -108,7 +116,7 @@ function removedMethod(methodName, methodData, className) {
 
 function addParam(methodName, className, param) {
   return {
-    name: methodName,
+    method: methodName,
     class: className,
     param: param,
     type: constants.ADD_PARAM
@@ -117,7 +125,7 @@ function addParam(methodName, className, param) {
 
 function removeParam(methodName, className, param) {
   return {
-    name: methodName,
+    method: methodName,
     class: className,
     param: param,
     type: constants.REMOVE_PARAM
