@@ -22,6 +22,9 @@ export function log(text) {
   console.log(text);
 }
 
+// Deveria lidar com esses exports (?)
 export const screan = (text) => {
   return `${text}!!!`
 }
+
+export const RANDOM_TYPE = 'RANDOM_TYPE'
