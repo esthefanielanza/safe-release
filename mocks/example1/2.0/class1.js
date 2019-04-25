@@ -12,6 +12,10 @@ export class Class3 {
   throwError(error) {
     throw error;
   }
+  
+  get className () {
+    return 'Class3'
+  }
 }
 
 export function log(text) {
