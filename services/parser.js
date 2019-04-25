@@ -83,7 +83,16 @@ function buildFileStructure(file) {
   }
 }
 
-function addNewClass(className) {
+function addNewClass(className, classObject) {
+  const methods = [];
+  const classBody = classObject.body.body;
+  Object.keys(classBody).forEach(methodName => {
+    methods.push({
+      name: methodName,
+      params:getParams(classBody[methodName])
+    });
+  });
+
   return {
     name: className,
     type: constants.ADD_CLASS
@@ -199,7 +208,7 @@ function compare(structureA, structureB) {
     const methodsInB = structureB[className];
 
     if(!doesClassExistOnA) {
-      changes.push(addNewClass(className))
+      changes.push(addNewClass(className, doesClassExistOnA))
       return;
     }
 

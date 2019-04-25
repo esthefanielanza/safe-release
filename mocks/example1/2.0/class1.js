@@ -3,10 +3,6 @@ export class Class1 {
     return a + a;
   }
 
-  multiply(a, b) { 
-    return a * b;
-  }
-
   isLarger(a, b, c) {
     return a > b;
   }
