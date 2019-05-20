@@ -44,6 +44,22 @@ function saveNewMethod(object, entity = {}, methods) {
   }
 }
 
+function handleVariable(object, entity, methods) {
+  const methodClass = entity.class || 'general';
+
+  if(!object.declarations) return;
+  object.declarations.map(item => {
+    if(item.init && item.init.type === constants.ARROW_FUNCTION_TYPE) {
+      const method = item.init;
+
+      methods[methodClass][item.id.name] = {
+        name: item.id.name,
+        params: getParams(method)
+      }
+    }
+  });
+}
+
 function handleTypeOfStructures(object, structures, entity, methods) {
   switch (object.type) {
     case constants.CLASS_TYPE:
@@ -53,6 +69,8 @@ function handleTypeOfStructures(object, structures, entity, methods) {
     case constants.FUNCTION_TYPE:
       saveNewMethod(object, entity, methods)
       break;
+    case constants.VARIABLE_TYPE:
+      handleVariable(object, entity, methods);
     default:
       break;
   }
