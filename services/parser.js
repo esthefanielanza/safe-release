@@ -27,7 +27,9 @@ function checkMethodClass(methods, methodClass) {
 
 function getParams(object) {
   const params = object.value ? object.value.params : object.params;
-  return params.map(param => param.name);
+  return params
+    .filter(param => param.type !== constants.DEFAULT_PARAM_TYPE)
+    .map(param => param.name);
 }
 
 function saveNewMethod(object, entity = {}, methods) {
@@ -84,7 +86,6 @@ function buildFileStructure(file) {
 }
 
 function addNewClass(className, classObject) {
-  console.log(classObject)
   const methods = [];
   Object.keys(classObject).forEach(methodName => {
     methods.push({
@@ -148,13 +149,17 @@ function getMethod(structure, className, methodName) {
   return structure[className][methodName];
 }
 
+function hasDefaultParam() {
+
+}
+
 function checkParamChanges(methodDataA, methodDataB, methodName, className) {
   const changes = [];
   const paramsA = methodDataA.params
   const paramsB = methodDataB.params
   
   paramsB.forEach(param => {
-    const doesParamExistsOnA = paramsA.includes(param) 
+    const doesParamExistsOnA = paramsA.includes(param)
     if(!doesParamExistsOnA) {
       changes.push(addParam(methodName, className, param))
     }

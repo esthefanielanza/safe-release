@@ -3,7 +3,8 @@ export class Class1 {
     return a + a;
   }
 
-  isLarger(a, b, c) {
+  isLarger(a, b, c, d ='defaultParam') {
+    console.log(c.invalid);
     return a > b;
   }
 }
@@ -18,7 +19,6 @@ export function log(text) {
   console.log(text);
 }
 
-// Deveria lidar com esses exports (?)
 export const screan = (text) => {
   return `${text}!!!`
 }

@@ -3,6 +3,7 @@ module.exports = {
   METHOD_TYPE: 'MethodDefinition',
   FUNCTION_TYPE: 'FunctionDeclaration',
   EXPORT_TYPE: 'ExportNamedDeclaration',
+  DEFAULT_PARAM_TYPE: 'AssignmentPattern',
   ADD_METHOD: 'ADDED_METHOD',
   REMOVE_METHOD: 'REMOVED_METHOD',
   ADD_PARAM: 'ADDED_PARAM',
