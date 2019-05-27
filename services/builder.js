@@ -1,4 +1,5 @@
 const parseService = require('./parser');
+const formatService = require('./formater');
 const constants = require('./constants');
 
 function addNewClass(className, classObject) {
@@ -131,23 +132,6 @@ function updateChanges(changes = {}, newChanges = {}) {
   return updatedChanges;
 }
 
-function getInitialValue() {
-  return { 
-    BC: [],
-    NBC: [], 
-    metadata: { 
-      BC: 0, 
-      NBC: 0,
-      ADD_METHOD: 0,
-      REMOVE_METHOD: 0,
-      ADD_PARAM: 0,
-      REMOVE_PARAM: 0,
-      ADD_CLASS: 0,
-      REMOVE_CLASS: 0
-    } 
-  };
-}
-
 function getChangesTypes() { 
   return { 
     ADD_CLASS: [],
@@ -191,7 +175,7 @@ function compare(structureA, structureB) {
     }
   })
 
-  return changes;
+  return formatService.formatResponse(changes);
 }
 
 module.exports = {
