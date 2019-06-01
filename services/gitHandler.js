@@ -1,10 +1,10 @@
 
 const path = require('path');
-const git = require('simple-git');
 const gitPromise = require('simple-git/promise');
 const rimraf = require("rimraf");
 const fs = require('fs')
 const constants = require('./constants');
+var copydir = require('copy-dir');
 
 function isDirectory(source) {
   return fs.lstatSync(source).isDirectory();
@@ -15,7 +15,15 @@ function getDirectories(source) {
   return isDirectory(source) && fs.readdirSync(source).map(name => path.join(source, name)).filter(isDirectory)
 }
 
-async function checkoutToVersion(version, dir) {
+function copyDirectory(from, to) {
+  copydir.sync(from, to, {
+    utimes: true,
+    mode: true,
+    cover: true
+  });
+}
+
+async function checkoutToVersion(dir, version) {
   const repoPath = getDirectories(dir)[0];
   const gitRepo = gitPromise(repoPath);
   
@@ -24,7 +32,7 @@ async function checkoutToVersion(version, dir) {
 }
 
 function deleteFile(dir) {
-  rimraf.sync(path.resolve(dir));
+  fs.existsSync(dir) && rimraf.sync(path.resolve(dir));
 }
 
 function createCloneDirectory(folder) {
@@ -45,11 +53,15 @@ async function cloneRepo(url, folder) {
     await gitPromise(cloneDirectory).clone(url);
 
     console.info('Finished cloning');
+    return cloneDirectory;
   } catch(e) {
     console.error(e);
   }
 }
 
 module.exports = {
-  cloneRepo
+  cloneRepo,
+  deleteFile,
+  checkoutToVersion,
+  copyDirectory
 };
