@@ -5,6 +5,7 @@ const esprima = require('esprima');
 const fs = require('fs');
 
 const parseService = require('./services/parser');
+const buildService = require('./services/builder');
 
 const port = 3000;
 
@@ -27,7 +28,7 @@ app.get('/buildB', function (req, res) {
 app.get('/compare', function (req, res) {
   const fileA = fs.readFileSync('./mocks/example1/1.0/class1.js', 'utf8');
   const fileB = fs.readFileSync('./mocks/example1/2.0/class1.js', 'utf8');
-  const result = parseService.compareFiles(fileA, fileB);
+  const result = buildService.compareFiles(fileA, fileB);
   res.end(JSON.stringify(result))
 });
 
