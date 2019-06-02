@@ -53,7 +53,7 @@ async function cloneRepo(url, folder) {
     await gitPromise(cloneDirectory).clone(url);
 
     console.info('Finished cloning');
-    return cloneDirectory;
+    return getDirectories(cloneDirectory)[0];;
   } catch(e) {
     console.error(e);
   }
