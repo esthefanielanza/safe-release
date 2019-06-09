@@ -36,8 +36,10 @@ app.get('/compareMocks', function (req, res) {
 
 app.get('/compare', async function (req, res) {
   const url = 'https://github.com/lodash/lodash';
-  await compareService.comparer(url, '4.17.11', '4.0.0-npm');
-  res.end(JSON.stringify({ body: 'Success!' }));
+  const result = await compareService.comparer(url, '4.17.11', '3.10.0-npm');
+  console.log(result)
+
+  res.end(JSON.stringify(result));
 });
 
 app.get('/esprima', function (req, res) {

@@ -180,8 +180,10 @@ function compare(structureA, structureB) {
 
 module.exports = {
   compareFiles: function (fileA, fileB) {
-    const structureA = parseService.buildFileStructure(fileA);
-    const structureB = parseService.buildFileStructure(fileB);
+    if(!fileA) console.log('fileA doesnt exist');
+    if(!fileB) console.log('fileB doesnt exist');
+    const structureA = fileA && parseService.buildFileStructure(fileA);
+    const structureB = fileB && parseService.buildFileStructure(fileB);
     return compare(structureA, structureB);
   }
 };
