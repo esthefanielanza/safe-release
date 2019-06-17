@@ -86,6 +86,16 @@ function handleTypeOfStructures(object, structures, entity, methods, isExportabl
   }
 }
 
+function saveExportableItem(isExportable, item) {
+  if(item.declaration.name) {
+    isExportable.push(item.declaration.name)
+  } else {
+    item.declaration.properties.forEach(innerItem => {
+      isExportable.push(innerItem.key.name)
+    })
+  }
+}
+
 function buildFileStructure(file) {
   const esprimaFile = esprima.parseModule(file);
   const isExportable = [];
@@ -105,7 +115,7 @@ function buildFileStructure(file) {
           });
         }
       } else if(item.type === constants.EXPORT_DEFAULT_TYPE) {
-        isExportable.push(item.declaration.name);
+        saveExportableItem(isExportable, item)
       } else {
         let structures = [{ body: item }];
 

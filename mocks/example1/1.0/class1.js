@@ -1,18 +1,18 @@
-export class Class1 {
-  sum(a, b) {
-    return a + b;
-  }
+// export class Class1 {
+//   sum(a, b) {
+//     return a + b;
+//   }
 
-  isLarger(a, b) {
-    return a > b;
-  }
+//   isLarger(a, b) {
+//     return a > b;
+//   }
 
-  subtract(a, b) {
-    return a - b;
-  }
-}
+//   subtract(a, b) {
+//     return a - b;
+//   }
+// }
 
-export class Class2 {
+class Class2 {
   sayHello() {
     console.log('Say hello');
   }
@@ -25,9 +25,10 @@ class Class3 {
 }
 
 export default {
-  Class3
+  Class3,
+  Class2
 }
 
-export function batata() {
-  console.log('batata')
-}
+// export function batata() {
+//   console.log('batata')
+// }
