@@ -11,10 +11,11 @@ function getStructureData(structures) {
   return structure;
 }
 
-function updateStructuresWithNewClass(object, structures) {
+function updateStructuresWithNewClass(object, structures, isExportable) {
   const className = object.id.name;
   const classBody = object.body.body;
   if(classBody) {
+    isExportable && isExportable.push(className)
     structures.push({ body: classBody, class: className });
   }
 }
@@ -32,25 +33,34 @@ function getParams(object) {
     .map(param => param.name);
 }
 
-function saveNewMethod(object, entity = {}, methods) {
+function saveNewMethod(object, entity = {}, methods, isExportable) {
   const methodName = object.key ? object.key.name : object.id.name;
   const methodClass = entity.class || 'general';
   
   checkMethodClass(methods, methodClass);
   
+  if(methodClass === 'general' && isExportable) {
+    isExportable.push(methodName);
+  }
+
   methods[methodClass][methodName] = {
     name: methodName,
     params: getParams(object)
   }
 }
 
-function handleVariable(object, entity, methods) {
+function handleVariable(object, entity, methods, isExportable) {
   const methodClass = entity.class || 'general';
 
   if(!object.declarations) return;
+
   object.declarations.map(item => {
     if(item.init && item.init.type === constants.ARROW_FUNCTION_TYPE) {
       const method = item.init;
+
+      if(methodClass === 'general' && isExportable) {
+        isExportable.push(item.id.name);
+      }
 
       methods[methodClass][item.id.name] = {
         name: item.id.name,
@@ -60,14 +70,14 @@ function handleVariable(object, entity, methods) {
   });
 }
 
-function handleTypeOfStructures(object, structures, entity, methods) {
+function handleTypeOfStructures(object, structures, entity, methods, isExportable) {
   switch (object.type) {
     case constants.CLASS_TYPE:
-      updateStructuresWithNewClass(object, structures);
+      updateStructuresWithNewClass(object, structures, isExportable);
       break;
     case constants.METHOD_TYPE:
     case constants.FUNCTION_TYPE:
-      saveNewMethod(object, entity, methods)
+      saveNewMethod(object, entity, methods, isExportable)
       break;
     case constants.VARIABLE_TYPE:
       handleVariable(object, entity, methods);
@@ -78,6 +88,8 @@ function handleTypeOfStructures(object, structures, entity, methods) {
 
 function buildFileStructure(file) {
   const esprimaFile = esprima.parseModule(file);
+  const isExportable = [];
+
   try {
     const methods = { general: {} };
     const { body: programBody } = esprimaFile
@@ -88,7 +100,17 @@ function buildFileStructure(file) {
 
         while(structures.length > 0) {
           let { entity, body } = getStructureData(structures);
+          body.forEach(object => {
+            handleTypeOfStructures(object, structures, entity, methods, isExportable)
+          });
+        }
+      } else if(item.type === constants.EXPORT_DEFAULT_TYPE) {
+        isExportable.push(item.declaration.name);
+      } else {
+        let structures = [{ body: item }];
 
+        while(structures.length > 0) {
+          let { entity, body } = getStructureData(structures);
           body.forEach(object => {
             handleTypeOfStructures(object, structures, entity, methods)
           });
@@ -96,9 +118,22 @@ function buildFileStructure(file) {
       }
     })
     
-    return methods;
+    const exportableItems = { general: {} }
+    Object.keys(methods).forEach(key => {
+      if(isExportable.includes(key) || key === 'general') {
+        if(key === 'general') {
+          Object.keys(methods[key]).map(method => {
+            if(isExportable.includes(method))
+              exportableItems['general'][method] = methods['general'][method];
+          })
+        } else {
+          exportableItems[key] = methods[key];
+        }
+      }
+    });
+
+    return exportableItems;
   } catch(e) {
-    console.error(e);
     return e;
   }
 }

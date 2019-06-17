@@ -3,6 +3,7 @@ module.exports = {
   METHOD_TYPE: 'MethodDefinition',
   FUNCTION_TYPE: 'FunctionDeclaration',
   EXPORT_TYPE: 'ExportNamedDeclaration',
+  EXPORT_DEFAULT_TYPE: 'ExportDefaultDeclaration',
   DEFAULT_PARAM_TYPE: 'AssignmentPattern',
   VARIABLE_TYPE: 'VariableDeclaration',
   ARROW_FUNCTION_TYPE: 'ArrowFunctionExpression',

@@ -23,3 +23,11 @@ class Class3 {
     throw error;
   }
 }
+
+export default {
+  Class3
+}
+
+export function batata() {
+  console.log('batata')
+}
