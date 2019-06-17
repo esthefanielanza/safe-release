@@ -96,6 +96,18 @@ function saveExportableItem(isExportable, item) {
   }
 }
 
+function saveModuleExportableItem(isExportable, item) {
+  const { left, right }  = item.expression;
+  const isModule = left.object && left.object.name === 'module';
+  const isExports = left.property && left.property.name === 'exports';
+  
+  if(isModule && isExports) {
+    right.properties && right.properties.map(property => {
+      isExportable.push(property.key.name);
+    })
+  }
+}
+
 function buildFileStructure(file) {
   const esprimaFile = esprima.parseModule(file);
   const isExportable = [];
@@ -116,6 +128,8 @@ function buildFileStructure(file) {
         }
       } else if(item.type === constants.EXPORT_DEFAULT_TYPE) {
         saveExportableItem(isExportable, item)
+      } else if(item.type === constants.EXPRESSION_TYPE) {
+        saveModuleExportableItem(isExportable, item)
       } else {
         let structures = [{ body: item }];
 

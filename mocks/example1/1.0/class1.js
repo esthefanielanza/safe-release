@@ -24,11 +24,10 @@ class Class3 {
   }
 }
 
-export default {
+module.exports = {
   Class3,
   Class2
 }
-
 // export function batata() {
 //   console.log('batata')
 // }

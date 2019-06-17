@@ -7,6 +7,7 @@ module.exports = {
   DEFAULT_PARAM_TYPE: 'AssignmentPattern',
   VARIABLE_TYPE: 'VariableDeclaration',
   ARROW_FUNCTION_TYPE: 'ArrowFunctionExpression',
+  EXPRESSION_TYPE: 'ExpressionStatement',
 
   ADD_METHOD: 'ADD_METHOD',
   REMOVE_METHOD: 'REMOVE_METHOD',
