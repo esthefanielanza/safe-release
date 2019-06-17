@@ -24,9 +24,7 @@ function copyDirectory(from, to) {
 }
 
 async function checkoutToVersion(dir, version) {
-  const repoPath = getDirectories(dir)[0];
-  const gitRepo = gitPromise(repoPath);
-  
+  const gitRepo = gitPromise(dir);  // console.log(gitRepo)
   gitRepo.checkout(version);
   console.info(`Checkout to version ${version}`);
 }
@@ -36,12 +34,16 @@ function deleteFile(dir) {
 }
 
 function createCloneDirectory(folder) {
+  deleteFile(constants.REPOS);
+
   const cloneDirectory = `${constants.REPOS}/${folder}`;
 
   if(!fs.existsSync(constants.REPOS)) fs.mkdirSync(constants.REPOS);
   if(fs.existsSync(cloneDirectory)) deleteFile(cloneDirectory)
   
   fs.mkdirSync(cloneDirectory);
+  fs.mkdirSync(cloneDirectory.replace('newer', 'older'));
+
   return path.resolve(cloneDirectory);
 }
 

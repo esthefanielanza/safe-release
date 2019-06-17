@@ -2,6 +2,7 @@ const gitHandler = require('./gitHandler');
 const builder = require('./builder');
 const walk = require('walk');
 const fs = require('fs');
+const path = require('path');
 
 function mergeResults(newResult, oldResult) {
   if(!oldResult) return newResult;
@@ -22,9 +23,9 @@ function mergeResults(newResult, oldResult) {
 }
 
 async function comparer(url, newerTag, olderTag) {
-  // const newerDirectory = await createWorkspace(url, newerTag, olderTag);
+  const newerDirectory = await createWorkspace(url, newerTag, olderTag);
   let newerDirectoryFiles = [];
-  const walker  = walk.walk('/Users/admin/Workspace/javascript-bcs-server/repos/newer/lodash', { followLinks: false });
+  const walker = walk.walk(newerDirectory, { followLinks: false });
 
   walker.on('file', function(root, stat, next) {
     newerDirectoryFiles.push(root + '/' + stat.name);
@@ -34,6 +35,7 @@ async function comparer(url, newerTag, olderTag) {
   let result = null;
   await new Promise((resolve, reject) => {
     walker.on('end', function() {
+      console.log('newer directory files', newerDirectoryFiles);
       newerDirectoryFiles = newerDirectoryFiles
         .filter((file) => file.match(/^(?!.*\.test\.js$).*\.js$/))
         .filter((file) => !file.match(/test/));
@@ -57,10 +59,8 @@ async function comparer(url, newerTag, olderTag) {
 async function createWorkspace(url, newerTag, olderTag) {
   const newerDirectory = await gitHandler.cloneRepo(url, 'newer');
   const olderDirectory = newerDirectory.replace('newer', 'older');
-  console.log(olderDirectory)
-  gitHandler.deleteFile(olderDirectory);
-  gitHandler.copyDirectory(newerDirectory, olderDirectory); 
 
+  gitHandler.copyDirectory(newerDirectory, olderDirectory); 
   gitHandler.checkoutToVersion(newerDirectory, newerTag);
   gitHandler.checkoutToVersion(olderDirectory, olderTag);
 
