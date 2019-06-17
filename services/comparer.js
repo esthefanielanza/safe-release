@@ -23,9 +23,9 @@ function mergeResults(newResult, oldResult) {
 }
 
 async function comparer(url, newerTag, olderTag) {
-  const newerDirectory = await createWorkspace(url, newerTag, olderTag);
+  // const newerDirectory = await createWorkspace(url, newerTag, olderTag);
   let newerDirectoryFiles = [];
-  const walker = walk.walk(newerDirectory, { followLinks: false });
+  const walker = walk.walk('/Users/admin/Workspace/javascript-bcs-server/repos/newer/lodash', { followLinks: false });
 
   walker.on('file', function(root, stat, next) {
     newerDirectoryFiles.push(root + '/' + stat.name);
@@ -35,17 +35,26 @@ async function comparer(url, newerTag, olderTag) {
   let result = null;
   await new Promise((resolve, reject) => {
     walker.on('end', function() {
-      console.log('newer directory files', newerDirectoryFiles);
-      newerDirectoryFiles = newerDirectoryFiles
+      const filteredFiles = newerDirectoryFiles
         .filter((file) => file.match(/^(?!.*\.test\.js$).*\.js$/))
         .filter((file) => !file.match(/test/));
 
-      newerDirectoryFiles.forEach((file) => {
+      // console.log('newer directory files', filteredFiles);
+      filteredFiles.forEach((file) => {
+        const olderFileName = file.replace('newer', 'older');
         const fileA = fs.readFileSync(file, 'utf8');
-        console.log(file)
+        
+        if(fs.existsSync(olderFileName)) {
+          const fileB = fs.readFileSync(olderFileName, 'utf8');
+          result = mergeResults(builder.compareFiles(fileA, fileB), result);
+          console.log(result)
+        } else {
+          // TODO: IF THERE IS NO OLDER VERSION ALL METHODS WERE ADDED
+          console.log(olderFileName + 'doesnt exists on older version ');
+        }
 
-        const fileB = fs.readFileSync(file.replace('newer', 'older'), 'utf8');
-        result = mergeResults(builder.compareFiles(fileA, fileB), result);
+        // TODO: IF THERE IS NO NEWER VERSION ALL METHODS WERE DELETED
+        // TODO: WEIRD ADD GENERAL CLASS
       });
       
       resolve(result);
