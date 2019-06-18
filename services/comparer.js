@@ -23,9 +23,10 @@ function mergeResults(newResult, oldResult) {
 }
 
 async function comparer(url, newerTag, olderTag) {
-  // const newerDirectory = await createWorkspace(url, newerTag, olderTag);
+  const newerDirectory = await createWorkspace(url, newerTag, olderTag);
   let newerDirectoryFiles = [];
-  const walker = walk.walk('/Users/admin/Workspace/javascript-bcs-server/repos/newer/lodash', { followLinks: false });
+  // const walker = walk.walk('/Users/admin/Workspace/javascript-bcs-server/repos/newer/lodash', { followLinks: false });
+  const walker = walk.walk(newerDirectory, { followLinks: false });
 
   walker.on('file', function(root, stat, next) {
     newerDirectoryFiles.push(root + '/' + stat.name);
@@ -62,9 +63,9 @@ async function createWorkspace(url, newerTag, olderTag) {
   const newerDirectory = await gitHandler.cloneRepo(url, 'newer');
   const olderDirectory = newerDirectory.replace('newer', 'older');
 
-  gitHandler.copyDirectory(newerDirectory, olderDirectory); 
-  gitHandler.checkoutToVersion(newerDirectory, newerTag);
-  gitHandler.checkoutToVersion(olderDirectory, olderTag);
+  await gitHandler.copyDirectory(newerDirectory, olderDirectory); 
+  await gitHandler.checkoutToVersion(newerDirectory, newerTag);
+  await gitHandler.checkoutToVersion(olderDirectory, olderTag);
 
   return newerDirectory;
 }

@@ -15,8 +15,8 @@ function getDirectories(source) {
   return isDirectory(source) && fs.readdirSync(source).map(name => path.join(source, name)).filter(isDirectory)
 }
 
-function copyDirectory(from, to) {
-  copydir.sync(from, to, {
+async function copyDirectory(from, to) {
+  await copydir.sync(from, to, {
     utimes: true,
     mode: true,
     cover: true
@@ -25,7 +25,7 @@ function copyDirectory(from, to) {
 
 async function checkoutToVersion(dir, version) {
   const gitRepo = gitPromise(dir);  // console.log(gitRepo)
-  gitRepo.checkout(version);
+  await gitRepo.checkout(version);
   console.info(`Checkout to version ${version}`);
 }
 
