@@ -39,22 +39,15 @@ async function comparer(url, newerTag, olderTag) {
         .filter((file) => file.match(/^(?!.*\.test\.js$).*\.js$/))
         .filter((file) => !file.match(/test/));
 
-      // console.log('newer directory files', filteredFiles);
       filteredFiles.forEach((file) => {
         const olderFileName = file.replace('newer', 'older');
-        const fileA = fs.readFileSync(file, 'utf8');
+
+        const newerFile = fs.readFileSync(file, 'utf8');
+        const olderFile = fs.existsSync(olderFileName) ? fs.readFileSync(olderFileName, 'utf8') : null;
         
-        if(fs.existsSync(olderFileName)) {
-          const fileB = fs.readFileSync(olderFileName, 'utf8');
-          result = mergeResults(builder.compareFiles(fileA, fileB), result);
-          console.log(result)
-        } else {
-          // TODO: IF THERE IS NO OLDER VERSION ALL METHODS WERE ADDED
-          console.log(olderFileName + 'doesnt exists on older version ');
-        }
+        result = mergeResults(builder.compareFiles(olderFile, newerFile), result);
 
         // TODO: IF THERE IS NO NEWER VERSION ALL METHODS WERE DELETED
-        // TODO: WEIRD ADD GENERAL CLASS
       });
       
       resolve(result);

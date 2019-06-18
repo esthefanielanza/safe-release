@@ -147,7 +147,7 @@ function compare(structureA, structureB) {
   let changes = getChangesTypes();
 
   Object.keys(structureB).forEach(className => {
-    const doesClassExistOnA = structureA[className];
+    const doesClassExistOnA = structureA && structureA[className];
     const methodsInB = structureB[className];
 
     if(!doesClassExistOnA) {
@@ -165,7 +165,7 @@ function compare(structureA, structureB) {
     changes = updateChanges(changes, removedMethodChanges)
   })
 
-  Object.keys(structureA).forEach(className => {
+  structureA && Object.keys(structureA).forEach(className => {
     const doesClassExistOnB = structureB[className];
 
     if(!doesClassExistOnB) {
@@ -180,10 +180,10 @@ function compare(structureA, structureB) {
 
 module.exports = {
   compareFiles: function (fileA, fileB) {
-    if(!fileA) console.log('fileA doesnt exist');
-    if(!fileB) console.log('fileB doesnt exist');
+
     const structureA = fileA && parseService.buildFileStructure(fileA);
     const structureB = fileB && parseService.buildFileStructure(fileB);
+
     return compare(structureA, structureB);
   }
 };

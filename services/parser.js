@@ -102,9 +102,13 @@ function saveModuleExportableItem(isExportable, item) {
   const isExports = left.property && left.property.name === 'exports';
   
   if(isModule && isExports) {
-    right.properties && right.properties.map(property => {
-      isExportable.push(property.key.name);
-    })
+    if(right.properties) {
+      right.properties.map(property => {
+        isExportable.push(property.key.name);
+      });
+    } else {
+      isExportable.push(right.name);
+    }
   }
 }
 
@@ -141,7 +145,7 @@ function buildFileStructure(file) {
         }
       }
     })
-    
+
     const exportableItems = { general: {} }
     Object.keys(methods).forEach(key => {
       if(isExportable.includes(key) || key === 'general') {
@@ -155,7 +159,7 @@ function buildFileStructure(file) {
         }
       }
     });
-
+    
     return exportableItems;
   } catch(e) {
     return e;
