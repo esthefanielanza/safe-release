@@ -28,6 +28,7 @@ function checkMethodClass(methods, methodClass) {
 
 function getParams(object) {
   const params = object.value ? object.value.params : object.params;
+  // TODO: Check if this default param logic makes sense. Add param without default is a BC and otherwise it isnt`t 
   return params
     .filter(param => param.type !== constants.DEFAULT_PARAM_TYPE)
     .map(param => param.name);
