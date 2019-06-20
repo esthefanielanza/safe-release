@@ -63,7 +63,7 @@ function removeParam(methodName, className, param) {
 }
 
 function getMethod(structure, className, methodName) {
-  return structure[className][methodName];
+  return structure && structure[className][methodName];
 }
 
 
@@ -97,7 +97,7 @@ function checkIfMethodsChanged(structureA, structureB, className, method) {
   const doesMethodNotExistsOnA = !methodDataA;
 
   if (doesMethodNotExistsOnA) {
-    const addNewMethodChanges = { ADD_METHOD: [addNewMethod(className, structureB[className])] }
+    const addNewMethodChanges = { ADD_METHOD: [addNewMethod(method, methodDataB, className)] }
     changes = updateChanges(changes, addNewMethodChanges);
   } else {
     changes = updateChanges(changes, checkParamChanges(methodDataA, methodDataB, method, className))
@@ -146,13 +146,21 @@ function getChangesTypes() {
 function compare(structureA, structureB) {
   let changes = getChangesTypes();
 
-  Object.keys(structureB).forEach(className => {
+  structureB && Object.keys(structureB).forEach(className => {
     const doesClassExistOnA = structureA && structureA[className];
     const methodsInB = structureB[className];
 
     if(!doesClassExistOnA) {
-      const addNewClassChanges = { ADD_CLASS: [addNewClass(className, structureB[className])] };
-      changes = updateChanges(changes, addNewClassChanges);
+      if(className !== 'general') {
+        const addNewClassChanges = { ADD_CLASS: [addNewClass(className, structureB[className])] };
+        changes = updateChanges(changes, addNewClassChanges);
+      }
+
+      Object.keys(structureB[className]).forEach(method => {
+        const addNewMethodChanges = { ADD_METHOD: [addNewMethod(method, structureB[className][method], className)] }
+        changes = updateChanges(changes, addNewMethodChanges);
+      })
+
       return;
     }
 
@@ -166,12 +174,19 @@ function compare(structureA, structureB) {
   })
 
   structureA && Object.keys(structureA).forEach(className => {
-    const doesClassExistOnB = structureB[className];
+    const doesClassExistOnB = structureB && structureB[className];
 
     if(!doesClassExistOnB) {
-      const removeClassChanges = { REMOVE_CLASS: [removeClass(className)] };
-      changes = updateChanges(changes, removeClassChanges);
-      return;
+      if(className !== 'general') {
+        const removeClassChanges = { REMOVE_CLASS: [removeClass(className)] };
+        changes = updateChanges(changes, removeClassChanges);
+        return;
+      }
+
+      Object.keys(structureA[className]).forEach(method => {
+        const removedMethodChanges = { REMOVE_METHOD: [removedMethod(method, structureA[className][method], className)] }
+        changes = updateChanges(changes, removedMethodChanges);
+      })
     }
   })
 

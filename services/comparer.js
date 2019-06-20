@@ -22,35 +22,61 @@ function mergeResults(newResult, oldResult) {
   }
 }
 
+function filterRelatableFiles(files) {
+  return files
+  .filter((file) => file.match(/^(?!.*\.test\.js$).*\.js$/))
+  .filter((file) => !file.match(/test\//));
+}
+
 async function comparer(url, newerTag, olderTag) {
-  const newerDirectory = await createWorkspace(url, newerTag, olderTag);
+  const newerDirectory = '/Users/admin/Workspace/javascript-bcs-server/repos/newer/lodash';
+  // const newerDirectory = await createWorkspace(url, newerTag, olderTag);
   let newerDirectoryFiles = [];
-  // const walker = walk.walk('/Users/admin/Workspace/javascript-bcs-server/repos/newer/lodash', { followLinks: false });
+  let olderDirectoryFiles = [];
   const walker = walk.walk(newerDirectory, { followLinks: false });
+  const walkerOlderDirecty = walk.walk(newerDirectory.replace('newer', 'older'), { followLinks: false });
 
   walker.on('file', function(root, stat, next) {
     newerDirectoryFiles.push(root + '/' + stat.name);
     next();
   });
 
+  walkerOlderDirecty.on('file', function(root, stat, next) {
+    olderDirectoryFiles.push(root + '/' + stat.name);
+    next();
+  });
+
   let result = null;
   await new Promise((resolve, reject) => {
     walker.on('end', function() {
-      const filteredFiles = newerDirectoryFiles
-        .filter((file) => file.match(/^(?!.*\.test\.js$).*\.js$/))
-        .filter((file) => !file.match(/test/));
+      const filteredFiles = filterRelatableFiles(newerDirectoryFiles);
 
       filteredFiles.forEach((file) => {
         const olderFileName = file.replace('newer', 'older');
 
         const newerFile = fs.readFileSync(file, 'utf8');
         const olderFile = fs.existsSync(olderFileName) ? fs.readFileSync(olderFileName, 'utf8') : null;
-        
-        result = mergeResults(builder.compareFiles(olderFile, newerFile), result);
 
-        // TODO: IF THERE IS NO NEWER VERSION ALL METHODS WERE DELETED
+        result = mergeResults(builder.compareFiles(olderFile, newerFile), result);
       });
-      
+
+      resolve(result);
+    })
+  });
+  
+  await new Promise((resolve, reject) => {
+    walkerOlderDirecty.on('end', function() {
+      const filteredFiles = filterRelatableFiles(olderDirectoryFiles);
+
+      filteredFiles.forEach((file) => {
+        const newerFileName = file.replace('older', 'newer');
+
+        const olderFile = fs.readFileSync(file, 'utf8');
+        const newerFile = fs.existsSync(newerFileName) ? fs.readFileSync(newerFileName, 'utf8') : null;
+
+        result = mergeResults(builder.compareFiles(olderFile, newerFile), result);
+      });
+
       resolve(result);
     })
   });
