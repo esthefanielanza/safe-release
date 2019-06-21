@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const esprima = require('esprima');
 const fs = require('fs');
+var readline = require('readline');
 
 const parseService = require('./services/parser');
 const buildService = require('./services/builder');
@@ -11,6 +12,8 @@ const compareService = require('./services/comparer');
 
 const port = 3000;
 
+app.use(express.json())
+
 app.get('/', function (req, res) {
   res.end('Rotas disponiveis: buildA, buildB, compare, esprima');
 });
@@ -18,33 +21,42 @@ app.get('/', function (req, res) {
 app.get('/buildA', function (req, res) {
   const fileA = fs.readFileSync('./mocks/example1/1.0/class1.js', 'utf8');
   const result = parseService.buildFileStructure(fileA);
-  res.end(JSON.stringify(result))
+  res.json(result)
 });
 
 app.get('/buildB', function (req, res) {
   const fileB = fs.readFileSync('./mocks/example1/2.0/class1.js', 'utf8');
   const result = parseService.buildFileStructure(fileB);
-  res.end(JSON.stringify(result))
+  res.json(result)
 });
 
-app.get('/compareMocks', function (req, res) {
-  const fileA = fs.readFileSync('./mocks/example1/1.0/class1.js', 'utf8');
-  const fileB = fs.readFileSync('./mocks/example1/2.0/class1.js', 'utf8');
+app.post('/compareFiles', function (req, res) {
+  const { older, newer } = req.body;
+
+  const fileA = fs.existsSync(older) && fs.readFileSync(older, 'utf8');
+  const fileB =  fs.existsSync(older) && fs.readFileSync(newer, 'utf8');
+
+  if(!fileA || !fileB) res.json({ error: 'Arquivo não existe' })
+
   const result = buildService.compareFiles(fileA, fileB);
-  res.end(JSON.stringify(result))
+  res.json(result)
 });
 
-app.get('/compare', async function (req, res) {
-  const url = 'https://github.com/lodash/lodash';
-  const result = await compareService.comparer(url, '3.9.0-npm', '3.10.0-npm');
+app.post('/compare', async function (req, res) {
+  const { repoURL, version = {} } = req.body;
+  const { older, newer } = version;
+  console.log(repoURL)
+  if(!repoURL || !version || !older || !newer)
+    return res.status(400).json({ error: 'Parametros inválidos.' });
 
-  res.end(JSON.stringify(result));
+  const result = await compareService.comparer(repoURL, older, newer);
+  res.json(result);
 });
 
 app.get('/esprima', function (req, res) {
   const file = fs.readFileSync('./mocks/example1/2.0/class1.js', 'utf8');
   const parsedFile = esprima.parseModule(file)
-  res.end(JSON.stringify(parsedFile));
+  res.json(parsedFile);
 });
 
 app.listen(port, function () {

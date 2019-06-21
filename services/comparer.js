@@ -2,7 +2,6 @@ const gitHandler = require('./gitHandler');
 const builder = require('./builder');
 const walk = require('walk');
 const fs = require('fs');
-const path = require('path');
 
 function mergeResults(newResult, oldResult) {
   if(!oldResult) return newResult;
@@ -32,8 +31,10 @@ function filterRelatableFiles(files) {
 async function comparer(url, newerTag, olderTag) {
   // const newerDirectory = '/Users/admin/Workspace/javascript-bcs-server/repos/newer/lodash';
   const newerDirectory = await createWorkspace(url, newerTag, olderTag);
+
   let newerDirectoryFiles = [];
   let olderDirectoryFiles = [];
+
   const walker = walk.walk(newerDirectory, { followLinks: false });
   const walkerOlderDirecty = walk.walk(newerDirectory.replace('newer', 'older'), { followLinks: false });
 
