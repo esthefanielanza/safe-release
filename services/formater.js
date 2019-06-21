@@ -15,14 +15,32 @@ function getInitialValue() {
   };
 }
 
+function splitAddParamBCS(addParamChanges) {
+  const addParamBCs = []
+  const addParamNBCs = []
+
+  addParamChanges.forEach(change => {
+    if(change.param.default) {
+      addParamNBCs.push(change)
+    } else {
+      addParamBCs.push(change)
+    }
+  })
+
+  return { addParamBCs, addParamNBCs }
+}
+
 function formatResponse(changes) {
+  const { addParamBCs, addParamNBCs } = splitAddParamBCS(changes.ADD_PARAM);
+
   const BC = [
     ...changes.REMOVE_METHOD,
-    ...changes.ADD_PARAM,
+    ...addParamBCs,
     ...changes.REMOVE_CLASS
   ];
 
   const NBC = [
+    ...addParamNBCs,
     ...changes.ADD_METHOD,
     ...changes.REMOVE_PARAM,
     ...changes.ADD_CLASS

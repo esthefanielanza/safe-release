@@ -30,8 +30,8 @@ function filterRelatableFiles(files) {
 }
 
 async function comparer(url, newerTag, olderTag) {
-  const newerDirectory = '/Users/admin/Workspace/javascript-bcs-server/repos/newer/lodash';
-  // const newerDirectory = await createWorkspace(url, newerTag, olderTag);
+  // const newerDirectory = '/Users/admin/Workspace/javascript-bcs-server/repos/newer/lodash';
+  const newerDirectory = await createWorkspace(url, newerTag, olderTag);
   let newerDirectoryFiles = [];
   let olderDirectoryFiles = [];
   const walker = walk.walk(newerDirectory, { followLinks: false });
@@ -75,9 +75,9 @@ async function comparer(url, newerTag, olderTag) {
         const newerFileName = file.replace('older', 'newer');
 
         const olderFile = fs.readFileSync(file, 'utf8');
-        const newerFile = fs.existsSync(newerFileName) ? fs.readFileSync(newerFileName, 'utf8') : null;
 
-        result = mergeResults(builder.compareFiles(olderFile, newerFile), result);
+        if(!fs.existsSync(newerFileName)) 
+          result = mergeResults(builder.compareFiles(olderFile, null), result);
       });
 
       resolve(result);

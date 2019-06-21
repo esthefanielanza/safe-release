@@ -28,10 +28,14 @@ function checkMethodClass(methods, methodClass) {
 
 function getParams(object) {
   const params = object.value ? object.value.params : object.params;
-  // TODO: Check if this default param logic makes sense. Add param without default is a BC and otherwise it isnt`t 
+
   return params
-    .filter(param => param.type !== constants.DEFAULT_PARAM_TYPE)
-    .map(param => param.name);
+    .map(param => {
+      return { 
+        name: param.name,
+        default: param.type === constants.DEFAULT_PARAM_TYPE && param.right.value
+      }
+    });
 }
 
 function saveNewMethod(object, entity = {}, methods, isExportable) {
@@ -99,8 +103,11 @@ function saveExportableItem(isExportable, item) {
 
 function saveModuleExportableItem(isExportable, item) {
   const { left, right }  = item.expression;
-  const isModule = left.object && left.object.name === 'module';
-  const isExports = left.property && left.property.name === 'exports';
+
+  if(!left) return;
+
+  const isModule = left && left.object && left.object.name === 'module';
+  const isExports = left && left.property && left.property.name === 'exports';
   
   if(isModule && isExports) {
     if(right.properties) {
@@ -163,6 +170,7 @@ function buildFileStructure(file) {
     
     return exportableItems;
   } catch(e) {
+    console.log(e);
     return e;
   }
 }

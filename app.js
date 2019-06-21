@@ -37,7 +37,6 @@ app.get('/compareMocks', function (req, res) {
 app.get('/compare', async function (req, res) {
   const url = 'https://github.com/lodash/lodash';
   const result = await compareService.comparer(url, '3.9.0-npm', '3.10.0-npm');
-  console.log(result)
 
   res.end(JSON.stringify(result));
 });
