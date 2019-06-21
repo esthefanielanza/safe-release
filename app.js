@@ -15,48 +15,67 @@ const port = 3000;
 app.use(express.json())
 
 app.get('/', function (req, res) {
-  res.end('Rotas disponiveis: buildA, buildB, compare, esprima');
+  return res.end('Rotas disponiveis: compare, compareFiles, compareRemote');
 });
 
 app.get('/buildA', function (req, res) {
   const fileA = fs.readFileSync('./mocks/example1/1.0/class1.js', 'utf8');
   const result = parseService.buildFileStructure(fileA);
-  res.json(result)
+  return res.json(result)
 });
 
 app.get('/buildB', function (req, res) {
   const fileB = fs.readFileSync('./mocks/example1/2.0/class1.js', 'utf8');
   const result = parseService.buildFileStructure(fileB);
-  res.json(result)
+  return res.json(result)
 });
 
-app.post('/compareFiles', function (req, res) {
+app.post('/compareFiles', async function (req, res) {
   const { older, newer } = req.body;
+  const fileStatA = fs.existsSync(older) && fs.lstatSync(older);
+  const fileStatB = fs.existsSync(newer) && fs.lstatSync(older)
+  
+  if(!fileStatA.isFile() || !fileStatB.isFile(newer))
+    return res.status(400).json({ error: 'Arquivo inválido' })
 
-  const fileA = fs.existsSync(older) && fs.readFileSync(older, 'utf8');
-  const fileB =  fs.existsSync(older) && fs.readFileSync(newer, 'utf8');
-
-  if(!fileA || !fileB) res.json({ error: 'Arquivo não existe' })
+  const fileA = fs.readFileSync(older, 'utf8');
+  const fileB = fs.readFileSync(newer, 'utf8');
 
   const result = buildService.compareFiles(fileA, fileB);
-  res.json(result)
+  return res.json(result)
 });
 
 app.post('/compare', async function (req, res) {
+  const { older, newer } = req.body;
+
+  if(!older || !newer)
+    return res.status(400).json({ error: 'Parametros inválidos.' });
+
+  const directoryStatA = fs.existsSync(older) && fs.lstatSync(older);
+  const directoryStatB = fs.existsSync(newer) && fs.lstatSync(older);
+
+  if(!directoryStatA.isDirectory() || !directoryStatB.isDirectory(newer))
+    return res.status(400).json({ error: 'Diretório inválido' })
+
+  const result = await compareService.comparer(newer, older);
+  return res.json(result);
+});
+
+app.post('/compareRemote', async function (req, res) {
   const { repoURL, version = {} } = req.body;
   const { older, newer } = version;
-  console.log(repoURL)
+
   if(!repoURL || !version || !older || !newer)
     return res.status(400).json({ error: 'Parametros inválidos.' });
 
-  const result = await compareService.comparer(repoURL, older, newer);
-  res.json(result);
+  const result = await compareService.comparerRemote(repoURL, older, newer);
+  return res.json(result);
 });
 
 app.get('/esprima', function (req, res) {
   const file = fs.readFileSync('./mocks/example1/2.0/class1.js', 'utf8');
   const parsedFile = esprima.parseModule(file)
-  res.json(parsedFile);
+  return res.json(parsedFile);
 });
 
 app.listen(port, function () {

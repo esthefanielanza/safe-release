@@ -28,15 +28,19 @@ function filterRelatableFiles(files) {
   .filter((file) => !file.match(/\/\.[^\/]+\//));
 }
 
-async function comparer(url, newerTag, olderTag) {
-  // const newerDirectory = '/Users/admin/Workspace/javascript-bcs-server/repos/newer/lodash';
+async function comparerRemote(url, newerTag, olderTag) {
   const newerDirectory = await createWorkspace(url, newerTag, olderTag);
+  const olderDirectory = newerDirectory.replace('newer', 'older');
 
+  return comparer(newerDirectory, olderDirectory);
+}
+
+async function comparer(newerDirectory, olderDirectory) {
   let newerDirectoryFiles = [];
   let olderDirectoryFiles = [];
 
   const walker = walk.walk(newerDirectory, { followLinks: false });
-  const walkerOlderDirecty = walk.walk(newerDirectory.replace('newer', 'older'), { followLinks: false });
+  const walkerOlderDirecty = walk.walk(olderDirectory, { followLinks: false });
 
   walker.on('file', function(root, stat, next) {
     newerDirectoryFiles.push(root + '/' + stat.name);
@@ -102,5 +106,6 @@ async function createWorkspace(url, newerTag, olderTag) {
 }
 
 module.exports = {
-  comparer
+  comparer,
+  comparerRemote
 };
