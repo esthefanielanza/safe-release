@@ -25,7 +25,8 @@ function mergeResults(newResult, oldResult) {
 function filterRelatableFiles(files) {
   return files
   .filter((file) => file.match(/^(?!.*\.test\.js$).*\.js$/))
-  .filter((file) => !file.match(/test\//));
+  .filter((file) => !file.match(/test|example|internal\//))
+  .filter((file) => !file.match(/\/\.[^\/]+\//));
 }
 
 async function comparer(url, newerTag, olderTag) {
@@ -47,7 +48,9 @@ async function comparer(url, newerTag, olderTag) {
   });
 
   let result = null;
-  await new Promise((resolve, reject) => {
+  const promises = [];
+
+  promises.push(new Promise((resolve, reject) => {
     walker.on('end', function() {
       const filteredFiles = filterRelatableFiles(newerDirectoryFiles);
 
@@ -62,9 +65,9 @@ async function comparer(url, newerTag, olderTag) {
 
       resolve(result);
     })
-  });
+  }));
   
-  await new Promise((resolve, reject) => {
+  promises.push(new Promise((resolve, reject) => {
     walkerOlderDirecty.on('end', function() {
       const filteredFiles = filterRelatableFiles(olderDirectoryFiles);
 
@@ -79,9 +82,10 @@ async function comparer(url, newerTag, olderTag) {
 
       resolve(result);
     })
-  });
+  }));
 
-  console.log('finished')
+  await Promise.all(promises);
+
   return result;
 }
 
