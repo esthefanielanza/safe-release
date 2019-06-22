@@ -24,8 +24,9 @@ function mergeResults(newResult, oldResult) {
 function filterRelatableFiles(files) {
   return files
   .filter((file) => file.match(/^(?!.*\.test\.js$).*\.js$/))
-  .filter((file) => !file.match(/\/(test|example|internal|benchmark|mock|template)[^\/]/))
-  .filter((file) => !file.match(/\/\.[^\/]+\//));
+  .filter((file) => !file.match(/\/(test|example|internal|benchmark|mock|template)/))
+  .filter((file) => !file.match(/\.config/))
+  .filter((file) => !file.match(/\/(\.|\_)/));
 }
 
 async function comparerRemote(url, newerTag, olderTag) {
@@ -61,10 +62,11 @@ async function comparer(newerDirectory, olderDirectory) {
 
       filteredFiles.forEach((file) => {
         const olderFileName = file.replace('newer', 'older');
+        console.log('older file name', olderFileName);
 
         const newerFile = fs.readFileSync(file, 'utf8');
         const olderFile = fs.existsSync(olderFileName) ? fs.readFileSync(olderFileName, 'utf8') : null;
-
+        console.log(newerFile);
         result = mergeResults(builder.compareFiles(olderFile, newerFile), result);
       });
 
@@ -80,6 +82,9 @@ async function comparer(newerDirectory, olderDirectory) {
         const newerFileName = file.replace('older', 'newer');
 
         const olderFile = fs.readFileSync(file, 'utf8');
+        console.log('older file name', newerFileName);
+
+        console.log(olderFile);
 
         if(!fs.existsSync(newerFileName)) 
           result = mergeResults(builder.compareFiles(olderFile, null), result);
