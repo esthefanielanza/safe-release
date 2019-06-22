@@ -7,7 +7,6 @@ const constants = require('./constants');
 var ncp = require('ncp').ncp;
 
 function isDirectory(source) {
-  console.log(source)
   return fs.lstatSync(source).isDirectory();
 }
 
@@ -22,14 +21,13 @@ function copyDirectory(from, to) {
         console.error(err);
         reject(err);
       }
-      console.log('Finished copy!');
       resolve();
      });
   })
 }
 
 async function checkoutToVersion(dir, version) {
-  const gitRepo = gitPromise(dir);  // console.log(gitRepo)
+  const gitRepo = gitPromise(dir);
   await gitRepo.checkout(version);
   console.info(`Checkout to version ${version}`);
 }

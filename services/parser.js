@@ -76,6 +76,7 @@ function handleVariable(object, entity, methods, isExportable) {
 }
 
 function handleTypeOfStructures(object, structures, entity, methods, isExportable) {
+  if(!object) return;
   switch (object.type) {
     case constants.CLASS_TYPE:
       updateStructuresWithNewClass(object, structures, isExportable);
@@ -95,9 +96,11 @@ function saveExportableItem(isExportable, item) {
   if(item.declaration.name) {
     isExportable.push(item.declaration.name)
   } else {
-    item.declaration.properties.forEach(innerItem => {
-      isExportable.push(innerItem.key.name)
-    })
+    item.declaration.properties
+      ? item.declaration.properties.forEach(innerItem => {
+        isExportable.push(innerItem.key.name)
+      })
+      : item.declaration.id && isExportable.push(item.declaration.id.name)
   }
 }
 
@@ -121,7 +124,6 @@ function saveModuleExportableItem(isExportable, item) {
 }
 
 function buildFileStructure(file) {
-  console.log('parsing', file);
   const esprimaFile = esprima.parseModule(file);
   const isExportable = [];
 

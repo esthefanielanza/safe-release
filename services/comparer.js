@@ -98,9 +98,7 @@ async function createWorkspace(url, newerTag, olderTag) {
   const newerDirectory = await gitHandler.cloneRepo(url, 'newer');
   const olderDirectory = newerDirectory.replace('newer', 'older');
 
-  console.log('will copy directory');
   await gitHandler.copyDirectory(newerDirectory, olderDirectory);
-  console.log('finished copy');
   await gitHandler.checkoutToVersion(newerDirectory, newerTag);
   await gitHandler.checkoutToVersion(olderDirectory, olderTag);
 
