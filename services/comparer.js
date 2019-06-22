@@ -24,7 +24,7 @@ function mergeResults(newResult, oldResult) {
 function filterRelatableFiles(files) {
   return files
   .filter((file) => file.match(/^(?!.*\.test\.js$).*\.js$/))
-  .filter((file) => !file.match(/\/(test|example|internal|benchmark|mock)[^\/]/))
+  .filter((file) => !file.match(/\/(test|example|internal|benchmark|mock|template)[^\/]/))
   .filter((file) => !file.match(/\/\.[^\/]+\//));
 }
 
@@ -98,7 +98,9 @@ async function createWorkspace(url, newerTag, olderTag) {
   const newerDirectory = await gitHandler.cloneRepo(url, 'newer');
   const olderDirectory = newerDirectory.replace('newer', 'older');
 
-  await gitHandler.copyDirectory(newerDirectory, olderDirectory); 
+  console.log('will copy directory');
+  await gitHandler.copyDirectory(newerDirectory, olderDirectory);
+  console.log('finished copy');
   await gitHandler.checkoutToVersion(newerDirectory, newerTag);
   await gitHandler.checkoutToVersion(olderDirectory, olderTag);
 

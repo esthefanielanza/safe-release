@@ -1,0 +1,37 @@
+{
+  "name": "safe-release",
+  "version": "1.0.0",
+  "description": "A tool to identify breaking and non-breaking changes between two version of a JavaScript library",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/esthefanielanza/safe-release.git"
+  },
+  "keywords": [
+    "safe",
+    "release",
+    "breaking-changes",
+    "non-breaking",
+    "changes",
+    "changes"
+  ],
+  "author": "Esthefanie Lanza",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/esthefanielanza/safe-release/issues"
+  },
+  "homepage": "https://github.com/esthefanielanza/safe-release#readme",
+  "dependencies": {
+    "esprima": "^4.0.1",
+    "express": "^4.16.4",
+    "ncp": "^2.0.0",
+    "path": "^0.12.7",
+    "rimraf": "^2.6.3",
+    "simple-git": "^1.113.0",
+    "walk": "^2.3.14"
+  },
+  "devDependencies": {}
+}

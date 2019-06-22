@@ -121,6 +121,7 @@ function saveModuleExportableItem(isExportable, item) {
 }
 
 function buildFileStructure(file) {
+  console.log('parsing', file);
   const esprimaFile = esprima.parseModule(file);
   const isExportable = [];
 

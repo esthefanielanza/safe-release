@@ -4,23 +4,28 @@ const gitPromise = require('simple-git/promise');
 const rimraf = require("rimraf");
 const fs = require('fs')
 const constants = require('./constants');
-var copydir = require('copy-dir');
+var ncp = require('ncp').ncp;
 
 function isDirectory(source) {
+  console.log(source)
   return fs.lstatSync(source).isDirectory();
 }
 
 function getDirectories(source) {
-  console.info('Is directory valid:', isDirectory(source));
   return isDirectory(source) && fs.readdirSync(source).map(name => path.join(source, name)).filter(isDirectory)
 }
 
-async function copyDirectory(from, to) {
-  await copydir.sync(from, to, {
-    utimes: true,
-    mode: true,
-    cover: true
-  });
+function copyDirectory(from, to) {
+  return new Promise((resolve, reject) => {
+    ncp(from, to, function (err) {
+      if (err) {
+        console.error(err);
+        reject(err);
+      }
+      console.log('Finished copy!');
+      resolve();
+     });
+  })
 }
 
 async function checkoutToVersion(dir, version) {
