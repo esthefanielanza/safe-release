@@ -24,7 +24,7 @@ function mergeResults(newResult, oldResult) {
 function filterRelatableFiles(files) {
   return files
   .filter((file) => file.match(/^(?!.*\.test\.js$).*\.js$/))
-  .filter((file) => !file.match(/test|example|internal\//))
+  .filter((file) => !file.match(/\/(test|example|internal|benchmark|mock)[^\/]/))
   .filter((file) => !file.match(/\/\.[^\/]+\//));
 }
 
