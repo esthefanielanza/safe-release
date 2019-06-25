@@ -3,11 +3,11 @@ const builder = require('./builder');
 const walk = require('walk');
 const fs = require('fs');
 
-function mergeResults(newResult, oldResult) {
+function mergeResults(newResult, oldResult, path) {
   if(!oldResult) return newResult;
   return {
-    BC: [...newResult.BC, ...oldResult.BC],
-    NBC: [...newResult.NBC, ...oldResult.NBC],
+    BC: [...newResult.BC.map(item => ({ ...item, path })), ...oldResult.BC],
+    NBC: [...newResult.NBC.map(item => ({ ...item, path })), ...oldResult.NBC],
     metadata: {
       BC: newResult.metadata.BC + oldResult.metadata.BC,
       NBC: newResult.metadata.NBC + oldResult.metadata.NBC,
@@ -65,7 +65,7 @@ async function comparer(newerDirectory, olderDirectory) {
 
         const newerFile = fs.readFileSync(file, 'utf8');
         const olderFile = fs.existsSync(olderFileName) ? fs.readFileSync(olderFileName, 'utf8') : null;
-        result = mergeResults(builder.compareFiles(olderFile, newerFile), result);
+        result = mergeResults(builder.compareFiles(olderFile, newerFile), result, file);
       });
 
       resolve(result);
@@ -81,7 +81,7 @@ async function comparer(newerDirectory, olderDirectory) {
         const olderFile = fs.readFileSync(file, 'utf8');
 
         if(!fs.existsSync(newerFileName)) 
-          result = mergeResults(builder.compareFiles(olderFile, null), result);
+          result = mergeResults(builder.compareFiles(olderFile, null), result, file);
       });
 
       resolve(result);
