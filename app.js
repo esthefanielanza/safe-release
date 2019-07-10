@@ -68,7 +68,7 @@ app.post('/compareRemote', async function (req, res) {
   if(!repoURL || !version || !older || !newer)
     return res.status(400).json({ error: 'Parametros inválidos.' });
 
-  const result = await compareService.comparerRemote(repoURL, older, newer);
+  const result = await compareService.comparerRemote(repoURL, newer, older);
   return res.json(result);
 });
 
