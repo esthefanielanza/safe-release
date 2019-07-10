@@ -1,3 +1,5 @@
+const constants = require('./constants');
+
 function getInitialValue() {
   return { 
     BC: [],
@@ -40,7 +42,7 @@ function formatResponse(changes) {
   ];
 
   const NBC = [
-    ...addParamNBCs,
+    ...(addParamNBCs.map(bc => ({ ...bc, type: constants.ADD_PARAM_DEFAULT }))),
     ...changes.ADD_METHOD,
     ...changes.REMOVE_PARAM,
     ...changes.ADD_CLASS
@@ -54,7 +56,8 @@ function formatResponse(changes) {
       NBC: NBC.length,
       ADD_METHOD: changes.ADD_METHOD.length,
       REMOVE_METHOD: changes.REMOVE_METHOD.length,
-      ADD_PARAM: changes.ADD_PARAM.length,
+      ADD_PARAM: addParamBCs.length,
+      ADD_PARAM_DEFAULT: addParamNBCs.length,
       REMOVE_PARAM: changes.REMOVE_PARAM.length,
       ADD_CLASS: changes.ADD_CLASS.length,
       REMOVE_CLASS: changes.REMOVE_CLASS.length
