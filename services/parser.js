@@ -85,6 +85,7 @@ function handleTypeOfStructures(object, structures, entity, methods, isExportabl
     case constants.METHOD_TYPE:
     case constants.FUNCTION_TYPE:
     case constants.FUNCTION_EXPRESSION:
+    case constants.ARROW_FUNCTION_EXPRESSION:
       saveNewMethod(object, entity, methods, isExportable)
       break;
     case constants.VARIABLE_TYPE:

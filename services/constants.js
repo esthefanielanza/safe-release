@@ -10,6 +10,7 @@ module.exports = {
   EXPRESSION_TYPE: 'ExpressionStatement',
   FUNCTION_EXPRESSION: 'FunctionExpression',
   OBJECT_EXPRESSION: 'ObjectExpression',
+  ARROW_FUNCTION_EXPRESSION: 'ArrowFunctionExpression',
 
   ADD_METHOD: 'ADD_METHOD',
   REMOVE_METHOD: 'REMOVE_METHOD',

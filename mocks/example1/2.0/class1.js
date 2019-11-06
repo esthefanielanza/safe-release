@@ -28,7 +28,7 @@ class Class1 {
 // }
 
 module.exports = {
-  log: function(text) {
+  log: (text) => {
     console.log(text);
   }
 }
