@@ -39,7 +39,7 @@ function getParams(object) {
 }
 
 function saveNewMethod(object, entity = {}, methods, isExportable) {
-  const methodName = object.key ? object.key.name : object.id.name;
+  const methodName = object.key ? object.key.name : object.id && object.id.name;
   const methodClass = (entity && entity.class) || 'general';
   
   checkMethodClass(methods, methodClass);
@@ -88,6 +88,7 @@ function handleTypeOfStructures(object, structures, entity, methods, isExportabl
       saveNewMethod(object, entity, methods, isExportable)
       break;
     case constants.VARIABLE_TYPE:
+    case constants.OBJECT_EXPRESSION:
       handleVariable(object, entity, methods);
     default:
       break;
@@ -113,11 +114,15 @@ function saveModuleExportableItem(isExportable, item, methods) {
 
   const isModule = left && left.object && left.object.name === 'module';
   const isExports = left && left.property && left.property.name === 'exports';
-  
+
   if(isModule && isExports) {
     if(right.properties) {
       right.properties.map(property => {
-        isExportable.push(property.key.name);
+        if(right.type === constants.OBJECT_EXPRESSION) {
+          handleTypeOfStructures({ ...property.value, id: property.key }, {}, null, methods, isExportable)
+        } else {
+          isExportable.push(property.key.name);
+        }
       });
     } else if(right.type === constants.FUNCTION_EXPRESSION) {
       handleTypeOfStructures(right, {}, null, methods, isExportable)
