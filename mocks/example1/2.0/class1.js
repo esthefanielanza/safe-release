@@ -1,4 +1,4 @@
-export class Class1 {
+class Class1 {
   // sum(a) {
   //   return a + a;
   // }
@@ -26,3 +26,9 @@ export class Class1 {
 // export const scream = (text) => {
 //   return `${text}!!!`
 // }
+
+module.exports = {
+  log: function(text) {
+    console.log(text);
+  }
+}

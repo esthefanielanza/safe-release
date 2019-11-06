@@ -19,7 +19,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/buildA', function (req, res) {
-  const fileA = fs.readFileSync('./mocks/example1/1.0/class1.js', 'utf8');
+  const fileA = fs.readFileSync('./repos/newer/axios/lib/core/mergeConfig.js', 'utf8');
   const result = parseService.buildFileStructure(fileA);
   return res.json(result)
 });

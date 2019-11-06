@@ -40,10 +40,10 @@ function createCloneDirectory(folder) {
   deleteFile(constants.REPOS);
 
   const cloneDirectory = `${constants.REPOS}/${folder}`;
-
+  console.log('will clone to', cloneDirectory);
   if(!fs.existsSync(constants.REPOS)) fs.mkdirSync(constants.REPOS);
   if(fs.existsSync(cloneDirectory)) deleteFile(cloneDirectory)
-  
+
   fs.mkdirSync(cloneDirectory);
   fs.mkdirSync(cloneDirectory.replace('newer', 'older'));
 
@@ -55,10 +55,10 @@ async function cloneRepo(url, folder) {
     console.info('Cloning started');
 
     const cloneDirectory = createCloneDirectory(folder);
+    console.log('created directory', url);
     await gitPromise(cloneDirectory).clone(url);
-
-    console.info('Finished cloning');
-    return getDirectories(cloneDirectory)[0];;
+    console.log('finished cloning');
+    return getDirectories(cloneDirectory)[0];
   } catch(e) {
     console.error(e);
   }

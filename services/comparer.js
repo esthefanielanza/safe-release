@@ -95,14 +95,14 @@ async function comparer(newerDirectory, olderDirectory) {
 }
 
 async function createWorkspace(url, newerTag, olderTag) {
-  const newerDirectory = await gitHandler.cloneRepo(url, 'newer');
-  const olderDirectory = newerDirectory.replace('newer', 'older');
+  // const newerDirectory = await gitHandler.cloneRepo(url, 'newer');
+  // const olderDirectory = newerDirectory.replace('newer', 'older');
+  // console.log(newerDirectory);
+  // await gitHandler.copyDirectory(newerDirectory, olderDirectory);
+  await gitHandler.checkoutToVersion('/Users/admin/Workspace/javascript-bcs-server/repos/newer/axios', newerTag);
+  await gitHandler.checkoutToVersion('/Users/admin/Workspace/javascript-bcs-server/repos/older/axios', olderTag);
 
-  await gitHandler.copyDirectory(newerDirectory, olderDirectory);
-  await gitHandler.checkoutToVersion(newerDirectory, newerTag);
-  await gitHandler.checkoutToVersion(olderDirectory, olderTag);
-
-  return newerDirectory;
+  return '/Users/admin/Workspace/javascript-bcs-server/repos/newer/axios';
 }
 
 module.exports = {
