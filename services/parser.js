@@ -40,7 +40,7 @@ function getParams(object) {
 
 function saveNewMethod(object, entity = {}, methods, isExportable) {
   const methodName = object.key ? object.key.name : object.id.name;
-  const methodClass = entity.class || 'general';
+  const methodClass = (entity && entity.class) || 'general';
   
   checkMethodClass(methods, methodClass);
   
@@ -77,12 +77,14 @@ function handleVariable(object, entity, methods, isExportable) {
 
 function handleTypeOfStructures(object, structures, entity, methods, isExportable) {
   if(!object) return;
+
   switch (object.type) {
     case constants.CLASS_TYPE:
       updateStructuresWithNewClass(object, structures, isExportable);
       break;
     case constants.METHOD_TYPE:
     case constants.FUNCTION_TYPE:
+    case constants.FUNCTION_EXPRESSION:
       saveNewMethod(object, entity, methods, isExportable)
       break;
     case constants.VARIABLE_TYPE:
@@ -104,7 +106,7 @@ function saveExportableItem(isExportable, item) {
   }
 }
 
-function saveModuleExportableItem(isExportable, item) {
+function saveModuleExportableItem(isExportable, item, methods) {
   const { left, right }  = item.expression;
 
   if(!left) return;
@@ -117,6 +119,8 @@ function saveModuleExportableItem(isExportable, item) {
       right.properties.map(property => {
         isExportable.push(property.key.name);
       });
+    } else if(right.type === constants.FUNCTION_EXPRESSION) {
+      handleTypeOfStructures(right, {}, null, methods, isExportable)
     } else {
       isExportable.push(right.name);
     }
@@ -144,7 +148,7 @@ function buildFileStructure(file) {
       } else if(item.type === constants.EXPORT_DEFAULT_TYPE) {
         saveExportableItem(isExportable, item)
       } else if(item.type === constants.EXPRESSION_TYPE) {
-        saveModuleExportableItem(isExportable, item)
+        saveModuleExportableItem(isExportable, item, methods)
       } else {
         let structures = [{ body: item }];
 
