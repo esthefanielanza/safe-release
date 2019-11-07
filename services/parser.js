@@ -55,7 +55,7 @@ function saveNewMethod(object, entity = {}, methods, isExportable) {
 }
 
 function handleVariable(object, entity, methods, isExportable) {
-  const methodClass = entity.class || 'general';
+  const methodClass = (entity && entity.class) || 'general';
 
   if(!object.declarations) return;
 
@@ -120,6 +120,7 @@ function saveModuleExportableItem(isExportable, item, methods) {
       right.properties.map(property => {
         if(right.type === constants.OBJECT_EXPRESSION) {
           handleTypeOfStructures({ ...property.value, id: property.key }, {}, null, methods, isExportable)
+          isExportable.push(property.key.name);
         } else {
           isExportable.push(property.key.name);
         }
@@ -166,6 +167,7 @@ function buildFileStructure(file) {
       }
     })
 
+    console.log(methods);
     const exportableItems = { general: {} }
     Object.keys(methods).forEach(key => {
       if(isExportable.includes(key) || key === 'general') {

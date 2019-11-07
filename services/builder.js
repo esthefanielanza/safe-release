@@ -72,6 +72,10 @@ function checkParamChanges(methodDataA, methodDataB, methodName, className) {
   const paramsA = methodDataA.params
   const paramsB = methodDataB.params
   
+  if(paramsA.length === paramsB.length) {
+    return changes;
+  }
+
   paramsB.forEach(param => {
     const paramsNames = paramsA.map(item => item.name);
     const doesParamExistsOnA = paramsNames.includes(param.name)

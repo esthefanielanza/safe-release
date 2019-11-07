@@ -25,7 +25,7 @@ app.get('/buildA', function (req, res) {
 });
 
 app.get('/buildB', function (req, res) {
-  const fileB = fs.readFileSync('./mocks/example1/2.0/class1.js', 'utf8');
+  const fileB = fs.readFileSync('repos/newer/axios/lib/defaults.js', 'utf8');
   const result = parseService.buildFileStructure(fileB);
   return res.json(result)
 });
@@ -73,7 +73,7 @@ app.post('/compareRemote', async function (req, res) {
 });
 
 app.get('/esprima', function (req, res) {
-  const file = fs.readFileSync('./mocks/example1/2.0/class1.js', 'utf8');
+  const file = fs.readFileSync('./repos/newer/axios/lib/defaults.js', 'utf8');
   const parsedFile = esprima.parseModule(file)
   return res.json(parsedFile);
 });
