@@ -9,6 +9,7 @@ const parseService = require('./services/parser');
 const buildService = require('./services/builder');
 const gitService = require('./services/gitHandler');
 const compareService = require('./services/comparer');
+const tester = require('./services/tester');
 
 const port = 3000;
 
@@ -76,6 +77,14 @@ app.get('/esprima', function (req, res) {
   const file = fs.readFileSync('./repos/newer/axios/lib/defaults.js', 'utf8');
   const parsedFile = esprima.parseModule(file)
   return res.json(parsedFile);
+});
+
+
+app.post('/results', async function (req, res) {
+  const { repoDirectory, repoURL } = req.body;
+  const result = await tester.compareVersions(repoDirectory, repoURL);
+
+  return res.json(result);
 });
 
 app.listen(port, function () {

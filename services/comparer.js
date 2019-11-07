@@ -37,6 +37,13 @@ async function comparerRemote(url, newerTag, olderTag) {
   return comparer(newerDirectory, olderDirectory);
 }
 
+async function compareVersions(newerDirectory, olderDirectory, newerTag, olderTag) {
+  await gitHandler.checkoutToVersion(newerDirectory, newerTag);
+  await gitHandler.checkoutToVersion(olderDirectory, olderTag);
+
+  return comparer(newerDirectory, olderDirectory);
+}
+
 async function comparer(newerDirectory, olderDirectory) {
   let newerDirectoryFiles = [];
   let olderDirectoryFiles = [];
@@ -99,13 +106,16 @@ async function createWorkspace(url, newerTag, olderTag) {
   const olderDirectory = newerDirectory.replace('newer', 'older');
 
   await gitHandler.copyDirectory(newerDirectory, olderDirectory);
+
   await gitHandler.checkoutToVersion(newerDirectory, newerTag);
   await gitHandler.checkoutToVersion(olderDirectory, olderTag);
 
+  console.log(newerDirectory);
   return newerDirectory;
 }
 
 module.exports = {
   comparer,
-  comparerRemote
+  comparerRemote,
+  compareVersions
 };
