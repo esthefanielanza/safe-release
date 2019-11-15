@@ -4,14 +4,12 @@ const path = require('path');
 
 async function compareVersions(newerDirectory, repoURL) {
   const olderDirectory = newerDirectory.replace('newer', 'older');
-  console.log(repoURL);
   const { all } = await gitPromise(newerDirectory).tags();
   const tags = all.map(cleanVersion).filter(item => item !== null);
 
   console.log(tags);
 
-  let versionA = tags[0];
-  let versionB = tags[1];
+
   let result = {};
   const defaultMetadata = {
     BC: 0,
@@ -31,17 +29,19 @@ async function compareVersions(newerDirectory, repoURL) {
     PATCH: defaultMetadata
   }
 
-  for(let i = 2; i < tags.length; i++) {
-    const data = await compareService.compareVersions(newerDirectory, path.resolve(olderDirectory), all[i], all[i-1]);
-    const type = comparer(versionB, versionA);
-    console.log(`comparing ${versionB} with ${versionA} - ${comparer(versionB, versionA)}`);
+  for(let i = 0; i < tags.length - 1; i++) {
+    const versionA = tags[i];
+    const versionB = tags[i + 1];
+    const data = await compareService.compareVersions(newerDirectory, path.resolve(olderDirectory), versionB.original, versionA.original);
+    const type = comparer(versionB.formatted, versionA.formatted);
+    console.log(`comparing ${versionB.original} with ${versionA.original} - ${type}`);
 
-    console.log(path.resolve(newerDirectory));
-    console.log( path.resolve(olderDirectory));
+    // console.log(path.resolve(newerDirectory));
+    // console.log( path.resolve(olderDirectory));
 
-    console.log('object', `${versionB}-${versionA}`);
+    // console.log('object', `${versionB}-${versionA}`);
 
-    result[`${versionB}/${versionA}`] = {
+    result[`${versionB.original}/${versionA.original}`] = {
       data,
       type
     }
@@ -52,9 +52,6 @@ async function compareVersions(newerDirectory, repoURL) {
       MINOR: calculateChangesByType(metadata.MINOR, type === 'MINOR' && data),
       MAJOR: calculateChangesByType(metadata.MAJOR, type === 'MAJOR' && data)
     }
-  
-    versionA = versionB;
-    versionB = tags[i]; 
   }
   
   console.log('finished for!!')
@@ -101,7 +98,7 @@ function cleanVersion(version) {
     return null;
   }
 
-  return version.replace(/[^\d.]/g, '');
+  return { formatted: version.replace(/[^\d.]/g, ''), original: version };
 }
 
 module.exports = {

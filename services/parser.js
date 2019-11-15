@@ -167,7 +167,6 @@ function buildFileStructure(file) {
       }
     })
 
-    console.log(methods);
     const exportableItems = { general: {} }
     Object.keys(methods).forEach(key => {
       if(isExportable.includes(key) || key === 'general') {

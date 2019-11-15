@@ -104,13 +104,11 @@ async function comparer(newerDirectory, olderDirectory) {
 async function createWorkspace(url, newerTag, olderTag) {
   const newerDirectory = await gitHandler.cloneRepo(url, 'newer');
   const olderDirectory = newerDirectory.replace('newer', 'older');
-
   await gitHandler.copyDirectory(newerDirectory, olderDirectory);
 
   await gitHandler.checkoutToVersion(newerDirectory, newerTag);
   await gitHandler.checkoutToVersion(olderDirectory, olderTag);
 
-  console.log(newerDirectory);
   return newerDirectory;
 }
 
