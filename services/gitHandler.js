@@ -29,7 +29,6 @@ function copyDirectory(from, to) {
 async function checkoutToVersion(dir, version) {
   const gitRepo = gitPromise(dir);
   await gitRepo.checkout(version);
-  console.info(`Checkout to version ${version}`);
 }
 
 function deleteFile(dir) {
@@ -47,7 +46,7 @@ function createCloneDirectory(folder) {
   fs.mkdirSync(cloneDirectory);
   fs.mkdirSync(cloneDirectory.replace('newer', 'older'));
 
-  return path.resolve(cloneDirectory);
+  return cloneDirectory;
 }
 
 async function cloneRepo(url, folder) {

@@ -7,9 +7,6 @@ async function compareVersions(newerDirectory, repoURL) {
   const { all } = await gitPromise(newerDirectory).tags();
   const tags = all.map(cleanVersion).filter(item => item !== null);
 
-  console.log(tags);
-
-
   let result = {};
   const defaultMetadata = {
     BC: 0,
@@ -32,14 +29,8 @@ async function compareVersions(newerDirectory, repoURL) {
   for(let i = 0; i < tags.length - 1; i++) {
     const versionA = tags[i];
     const versionB = tags[i + 1];
-    const data = await compareService.compareVersions(newerDirectory, path.resolve(olderDirectory), versionB.original, versionA.original);
+    const data = await compareService.compareVersions(newerDirectory, olderDirectory, versionB.original, versionA.original);
     const type = comparer(versionB.formatted, versionA.formatted);
-    console.log(`comparing ${versionB.original} with ${versionA.original} - ${type}`);
-
-    // console.log(path.resolve(newerDirectory));
-    // console.log( path.resolve(olderDirectory));
-
-    // console.log('object', `${versionB}-${versionA}`);
 
     result[`${versionB.original}/${versionA.original}`] = {
       data,
@@ -54,8 +45,8 @@ async function compareVersions(newerDirectory, repoURL) {
     }
   }
   
-  console.log('finished for!!')
-  return { result, metadata };
+  const repoName = `${repoURL.split('/')[3]}/${repoURL.split('/')[4]}`;
+  return { [repoName]: { result, metadata } };
 }
 
 function calculateChangesByType(metadata, data) {

@@ -1,13 +1,16 @@
 const gitHandler = require('./gitHandler');
 const builder = require('./builder');
 const walk = require('walk');
+const walk2 = require('walk');
 const fs = require('fs');
 
 function mergeResults(newResult, oldResult, path) {
+  if(!path) return oldResult;
   if(!oldResult) return newResult;
+  if(!newResult) return oldResult;
   return {
-    BC: [...newResult.BC.map(item => ({ ...item, path })), ...oldResult.BC],
-    NBC: [...newResult.NBC.map(item => ({ ...item, path })), ...oldResult.NBC],
+    BC: [...oldResult.BC, ...newResult.BC.map(item => ({ ...item, path }))],
+    NBC: [...oldResult.NBC, ...newResult.NBC.map(item => ({ ...item, path }))],
     metadata: {
       BC: newResult.metadata.BC + oldResult.metadata.BC,
       NBC: newResult.metadata.NBC + oldResult.metadata.NBC,
@@ -49,22 +52,15 @@ async function comparer(newerDirectory, olderDirectory) {
   let olderDirectoryFiles = [];
 
   const walker = walk.walk(newerDirectory, { followLinks: false });
-  const walkerOlderDirecty = walk.walk(olderDirectory, { followLinks: false });
 
   walker.on('file', function(root, stat, next) {
     newerDirectoryFiles.push(root + '/' + stat.name);
     next();
   });
 
-  walkerOlderDirecty.on('file', function(root, stat, next) {
-    olderDirectoryFiles.push(root + '/' + stat.name);
-    next();
-  });
-
   let result = null;
-  const promises = [];
 
-  promises.push(new Promise((resolve, reject) => {
+  const walkingNewFiles = new Promise((resolve, reject) => {
     walker.on('end', function() {
       const filteredFiles = filterRelatableFiles(newerDirectoryFiles);
 
@@ -78,9 +74,18 @@ async function comparer(newerDirectory, olderDirectory) {
 
       resolve(result);
     })
-  }));
-  
-  promises.push(new Promise((resolve, reject) => {
+  });
+
+  await walkingNewFiles;
+
+  const walkerOlderDirecty = walk2.walk(olderDirectory, { followLinks: false });
+
+  walkerOlderDirecty.on('file', function(root, stat, next) {
+    olderDirectoryFiles.push(root + '/' + stat.name);
+    next();
+  });
+
+  const walkingOldFiles = new Promise((resolve, reject) => {
     walkerOlderDirecty.on('end', function() {
       const filteredFiles = filterRelatableFiles(olderDirectoryFiles);
 
@@ -88,15 +93,16 @@ async function comparer(newerDirectory, olderDirectory) {
         const newerFileName = file.replace('older', 'newer');
         const olderFile = fs.readFileSync(file, 'utf8');
 
-        if(!fs.existsSync(newerFileName)) 
+        if(!fs.existsSync(newerFileName)) {
           result = mergeResults(builder.compareFiles(olderFile, null), result, file);
+        }
       });
 
       resolve(result);
     })
-  }));
+  });
 
-  await Promise.all(promises);
+  await walkingOldFiles;
 
   return result;
 }
