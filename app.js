@@ -15,6 +15,7 @@ const port = 3000;
 
 app.use(express.json())
 
+
 app.get('/', function (req, res) {
   return res.end('Rotas disponiveis: compare, compareFiles, compareRemote');
 });
@@ -87,6 +88,8 @@ app.post('/results', async function (req, res) {
   return res.json(result);
 });
 
-app.listen(port, function () {
+const server = app.listen(port, function () {
   console.log('App listening on port 3000 ~');
 });
+
+server.setTimeout(1800000);

@@ -5,7 +5,8 @@ const path = require('path');
 async function compareVersions(newerDirectory, repoURL) {
   const olderDirectory = newerDirectory.replace('newer', 'older');
   const { all } = await gitPromise(newerDirectory).tags();
-  const tags = all.map(cleanVersion).filter(item => item !== null);
+
+  const tags = all.map(cleanVersion).filter(item => item !== null && item.formatted);
 
   let result = {};
   const defaultMetadata = {
@@ -26,12 +27,16 @@ async function compareVersions(newerDirectory, repoURL) {
     PATCH: defaultMetadata
   }
 
+  // console.log(all);
+  // console.log(tags)
+
   for(let i = 0; i < tags.length - 1; i++) {
     const versionA = tags[i];
     const versionB = tags[i + 1];
+    console.log(`comparing ${versionB.original}/${versionA.original}`)
+
     const data = await compareService.compareVersions(newerDirectory, olderDirectory, versionB.original, versionA.original);
     const type = comparer(versionB.formatted, versionA.formatted);
-
     result[`${versionB.original}/${versionA.original}`] = {
       data,
       type
@@ -85,7 +90,7 @@ function comparer(newer, older) {
 }
 
 function cleanVersion(version) {
-  if(version.includes('-')) {
+  if(version.includes('-') || version.split('.').length < 3 ) {
     return null;
   }
 

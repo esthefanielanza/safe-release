@@ -63,13 +63,16 @@ async function comparer(newerDirectory, olderDirectory) {
   const walkingNewFiles = new Promise((resolve, reject) => {
     walker.on('end', function() {
       const filteredFiles = filterRelatableFiles(newerDirectoryFiles);
-
       filteredFiles.forEach((file) => {
         const olderFileName = file.replace('newer', 'older');
 
         const newerFile = fs.readFileSync(file, 'utf8');
         const olderFile = fs.existsSync(olderFileName) ? fs.readFileSync(olderFileName, 'utf8') : null;
-        result = mergeResults(builder.compareFiles(olderFile, newerFile), result, file);
+        const comparerResult = builder.compareFiles(olderFile, newerFile);
+        result = mergeResults(comparerResult, result, file);
+        if(!comparerResult) {
+          console.log(`Could not compare ${file} - ${olderFileName}`);
+        }
       });
 
       resolve(result);

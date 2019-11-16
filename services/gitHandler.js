@@ -28,7 +28,9 @@ function copyDirectory(from, to) {
 
 async function checkoutToVersion(dir, version) {
   const gitRepo = gitPromise(dir);
-  await gitRepo.checkout(version);
+  await gitRepo.stash();
+  // await gitRepo.checkout();
+  await gitRepo.checkout([version, '-f']);
 }
 
 function deleteFile(dir) {

@@ -202,10 +202,13 @@ function compare(structureA, structureB) {
 
 module.exports = {
   compareFiles: function (fileA, fileB) {
-
-    const structureA = fileA && parseService.buildFileStructure(fileA);
-    const structureB = fileB && parseService.buildFileStructure(fileB);
-
-    return compare(structureA, structureB);
+    try {
+      const structureA = fileA && parseService.buildFileStructure(fileA);
+      const structureB = fileB && parseService.buildFileStructure(fileB);
+  
+      return compare(structureA, structureB);
+    } catch(e) {
+      return null;
+    }
   }
 };
