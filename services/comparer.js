@@ -115,8 +115,8 @@ async function createWorkspace(url, newerTag, olderTag) {
   const olderDirectory = newerDirectory.replace('newer', 'older');
   await gitHandler.copyDirectory(newerDirectory, olderDirectory);
 
-  await gitHandler.checkoutToVersion(newerDirectory, newerTag);
-  await gitHandler.checkoutToVersion(olderDirectory, olderTag);
+  newerTag && await gitHandler.checkoutToVersion(newerDirectory, newerTag);
+  olderTag && await gitHandler.checkoutToVersion(olderDirectory, olderTag);
 
   return newerDirectory;
 }
@@ -124,5 +124,6 @@ async function createWorkspace(url, newerTag, olderTag) {
 module.exports = {
   comparer,
   comparerRemote,
-  compareVersions
+  compareVersions,
+  createWorkspace
 };

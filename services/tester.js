@@ -2,8 +2,10 @@ const gitPromise = require('simple-git/promise');
 const compareService = require('./comparer');
 const path = require('path');
 
-async function compareVersions(newerDirectory, repoURL) {
+async function compareVersions(repoURL) {
+  const newerDirectory = await compareService.createWorkspace(repoURL);
   const olderDirectory = newerDirectory.replace('newer', 'older');
+
   const { all } = await gitPromise(newerDirectory).tags();
 
   const tags = all.map(cleanVersion).filter(item => item !== null && item.formatted);

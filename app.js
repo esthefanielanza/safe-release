@@ -82,8 +82,8 @@ app.get('/esprima', function (req, res) {
 
 
 app.post('/results', async function (req, res) {
-  const { repoDirectory, repoURL } = req.body;
-  const result = await tester.compareVersions(repoDirectory, repoURL);
+  const { repoURL } = req.body;
+  const result = await tester.compareVersions(repoURL);
 
   return res.json(result);
 });
