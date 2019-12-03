@@ -58,10 +58,8 @@ Body:
 
 ```java
 {
-    {
-        "older" : "./repos/older/project",
-        "newer" : "./repos/newer/project"
-    }
+    "older" : "./repos/older/project",
+    "newer" : "./repos/newer/project"
 }
 ```
 
@@ -74,10 +72,8 @@ Body:
 
 ```java
 {
-    {
-        "older" : "./repos/older/project/file.js",
-        "newer" : "./repos/newer/project/file.js"
-    }
+    "older" : "./repos/older/project/file.js",
+    "newer" : "./repos/newer/project/file.js"
 }
 ```
 
