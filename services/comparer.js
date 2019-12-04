@@ -64,7 +64,7 @@ async function comparer(newerDirectory, olderDirectory) {
     walker.on('end', function() {
       const filteredFiles = filterRelatableFiles(newerDirectoryFiles);
       filteredFiles.forEach((file) => {
-        const olderFileName = file.replace('newer', 'older');
+        const olderFileName = file.replace(newerDirectory, olderDirectory);
 
         const newerFile = fs.readFileSync(file, 'utf8');
         const olderFile = fs.existsSync(olderFileName) ? fs.readFileSync(olderFileName, 'utf8') : null;
@@ -93,7 +93,7 @@ async function comparer(newerDirectory, olderDirectory) {
       const filteredFiles = filterRelatableFiles(olderDirectoryFiles);
 
       filteredFiles.forEach((file) => {
-        const newerFileName = file.replace('older', 'newer');
+        const newerFileName = file.replace(newerDirectory, olderDirectory);
         const olderFile = fs.readFileSync(file, 'utf8');
 
         if(!fs.existsSync(newerFileName)) {
