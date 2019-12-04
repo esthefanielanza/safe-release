@@ -65,6 +65,8 @@ Body:
 
 ####  Detecting changes between two files:
 
+URL: 
+
 ```java
 localhost:3000/compareFiles
 ```
@@ -78,6 +80,9 @@ Body:
 ```
 
 ####  Detecting changes in version histories:
+
+URL: 
+
 ```java
 localhost:3000/compareAllVersions
 ```
