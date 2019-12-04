@@ -93,7 +93,7 @@ async function comparer(newerDirectory, olderDirectory) {
       const filteredFiles = filterRelatableFiles(olderDirectoryFiles);
 
       filteredFiles.forEach((file) => {
-        const newerFileName = file.replace(newerDirectory, olderDirectory);
+        const newerFileName = file.replace(olderDirectory, newerDirectory);
         const olderFile = fs.readFileSync(file, 'utf8');
 
         if(!fs.existsSync(newerFileName)) {
