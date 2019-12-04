@@ -17,7 +17,7 @@ app.use(express.json())
 
 
 app.get('/', function (req, res) {
-  return res.end('Rotas disponiveis: compare, compareFiles, compareRemote');
+  return res.end('Rotas disponiveis: compare, compareFiles, compareRemote, compareAllVersions');
 });
 
 app.get('/buildA', function (req, res) {
