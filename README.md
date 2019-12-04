@@ -78,3 +78,13 @@ Body:
 ```
 
 ####  Detecting changes in version histories:
+```java
+localhost:3000/compareAllVersions
+```
+Body:
+
+```java
+{
+   "repoURL": "https://github.com/owner/project"
+}
+```
