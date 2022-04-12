@@ -30,7 +30,7 @@
     "ncp": "^2.0.0",
     "path": "^0.12.7",
     "rimraf": "^2.6.3",
-    "simple-git": "^1.113.0",
+    "simple-git": "^3.5.0",
     "walk": "^2.3.14"
   },
   "devDependencies": {}
